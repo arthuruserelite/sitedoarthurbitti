@@ -1,121 +1,164 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meus Links</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Links - Editor</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 40px 20px;
+        }
 
-<style>
-body {
-    background-color: #121212;
-    color: white;
-    font-family: 'Segoe UI', sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-}
+        h1 { font-size: 1.8rem; margin-bottom: 30px; }
 
-.links-container {
-    width: 100%;
-    max-width: 350px;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
+        .links-container {
+            width: 100%;
+            max-width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
 
-.link-card {
-    border: 2px solid #00ff88;
-    color: #00ff88;
-    padding: 15px;
-    text-align: center;
-    border-radius: 8px;
-    cursor: pointer;
-}
+        .link-card {
+            background: transparent;
+            border: 2px solid #00ff88;
+            color: #00ff88;
+            text-decoration: none;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-size: 16px;
+        }
 
-.link-card:hover {
-    background: #00ff88;
-    color: #121212;
-}
+        .link-card:hover {
+            background: #00ff88;
+            color: #121212;
+        }
 
-.senha-container, .conteudo-secreto {
-    display: none;
-    flex-direction: column;
-    gap: 10px;
-}
+        /* Sessão Secreta */
+        .sessao-secreta {
+            display: none;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+            padding: 15px;
+            border: 1px dashed #00ff88;
+            border-radius: 8px;
+            background: #1a1a1a;
+        }
 
-#loading {
-    display: none;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background: #121212;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
+        .link-secreto {
+            background: #00ff8822;
+            border: 1px solid #00ff88;
+            color: white;
+            padding: 10px;
+            text-decoration: none;
+            border-radius: 5px;
+            text-align: center;
+        }
 
-.loader {
-    border: 4px solid #222;
-    border-top: 4px solid #00ff88;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
+        /* Estilo do Input de Edição */
+        .edit-input {
+            background: #222;
+            color: #00ff88;
+            border: 1px solid #00ff88;
+            padding: 5px;
+            width: 80%;
+            border-radius: 4px;
+            margin-bottom: 5px;
+        }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-</style>
+        .btn-salvar {
+            background: #00ff88;
+            color: #121212;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .senha-container { display: none; flex-direction: column; gap: 10px; }
+        input[type="password"] { padding: 12px; border-radius: 5px; border: none; text-align: center; }
+        
+    </style>
 </head>
-
 <body>
 
-<h2>Meus Links</h2>
+    <h1 id="titulo-site">Meus Links</h1>
 
-<div class="links-container">
-    <div class="link-card" onclick="mostrarSenha()">Área Restrita 🔒</div>
+    <div class="links-container">
+        
+        <a href="LINK_INSTA_1" class="link-card" id="txt-link1">Instagram Principal</a>
+        <a href="LINK_INSTA_2" class="link-card" id="txt-link2">Instagram Secundário</a>
+        <a href="mailto:abitticarlos@gmail.com" class="link-card" id="txt-email">E-mail</a>
 
-    <div id="senha" class="senha-container">
-        <input type="password" id="input">
-        <button onclick="entrar()">Entrar</button>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div class="link-card" onclick="toggleFormSenha()">Aba Restrita 🔒</div>
+            
+            <div id="form-senha" class="senha-container">
+                <input type="password" id="input-senha" placeholder="Digite a senha">
+                <button class="btn-salvar" onclick="validarAcesso()">Entrar</button>
+            </div>
+
+            <div id="conteudo-secreto" class="sessao-secreta">
+                <p style="text-align: center; color: #00ff88;">⚙️ PAINEL DE EDIÇÃO</p>
+                
+                <label>Nome Link 1:</label>
+                <input type="text" id="edit-l1" class="edit-input" value="Instagram Principal">
+                
+                <label>Nome Link 2:</label>
+                <input type="text" id="edit-l2" class="edit-input" value="Instagram Secundário">
+                
+                <button class="btn-salvar" onclick="aplicarNomes()">Aplicar Alterações</button>
+
+                <hr style="width:100%; border: 0.5px solid #333; margin: 10px 0;">
+                
+                <a href="LINK_1" class="link-secreto" id="txt-s1">Campo Secreto 1</a>
+                <a href="LINK_2" class="link-secreto" id="txt-s2">Campo Secreto 2</a>
+            </div>
+        </div>
+
     </div>
 
-    <div id="secreto" class="conteudo-secreto">
-        <a href="#">Link 1</a>
-        <a href="#">Link 2</a>
-    </div>
-</div>
+    <script>
+        function toggleFormSenha() {
+            const form = document.getElementById('form-senha');
+            form.style.display = form.style.display === 'flex' ? 'none' : 'flex';
+        }
 
-<div id="loading">
-    <div class="loader"></div>
-    <p>Carregando...</p>
-</div>
+        function validarAcesso() {
+            if (document.getElementById('input-senha').value === "07020401") {
+                document.getElementById('form-senha').style.display = 'none';
+                document.getElementById('conteudo-secreto').style.display = 'flex';
+            } else { alert("Senha incorreta!"); }
+        }
 
-<script>
-function mostrarSenha() {
-    document.getElementById('senha').style.display = 'flex';
-}
+        function aplicarNomes() {
+            // Pega o que você digitou nos campos de texto
+            const novoNome1 = document.getElementById('edit-l1').value;
+            const novoNome2 = document.getElementById('edit-l2').value;
 
-function entrar() {
-    const senha = document.getElementById('input').value;
+            // Aplica nos botões principais
+            document.getElementById('txt-link1').innerText = novoNome1;
+            document.getElementById('txt-link2').innerText = novoNome2;
 
-    if (senha === "07020401") {
-
-        document.getElementById('loading').style.display = 'flex';
-
-        setTimeout(() => {
-            document.getElementById('loading').style.display = 'none';
-            document.getElementById('secreto').style.display = 'flex';
-        }, 1000);
-
-    } else {
-        alert("Senha errada");
-    }
-}
-</script>
+            alert("Nomes alterados na visualização! (Lembre-se: para ficar permanente, você deve salvar no arquivo index.html do GitHub)");
+        }
+    </script>
 
 </body>
 </html>
