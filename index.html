@@ -8,7 +8,7 @@
         body {
             background-color: #121212;
             color: white;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -58,21 +58,14 @@
             box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
         }
 
-        /* --- SESSÃO SECRETA E ANIMAÇÕES --- */
-        
-        @keyframes fadeInSlide {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* Animações e Sessão Secreta */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .sessao-secreta {
-            display: none; /* Ativado via JS */
+            display: none;
             flex-direction: column;
             gap: 10px;
             margin-top: 10px;
@@ -80,7 +73,7 @@
             border: 1px dashed #00ff88;
             border-radius: 8px;
             background: #1a1a1a;
-            animation: fadeInSlide 0.4s ease-out forwards;
+            animation: fadeIn 0.4s ease-out;
         }
 
         .link-secreto {
@@ -92,11 +85,6 @@
             border-radius: 5px;
             text-align: center;
             font-size: 14px;
-            transition: background 0.3s;
-        }
-
-        .link-secreto:hover {
-            background: #00ff8844;
         }
 
         .senha-container {
@@ -104,7 +92,7 @@
             flex-direction: column;
             gap: 10px;
             margin-top: 5px;
-            animation: fadeInSlide 0.3s ease-out;
+            animation: fadeIn 0.3s ease-out;
         }
 
         input {
@@ -114,12 +102,7 @@
             background: #222;
             color: white;
             text-align: center;
-            font-size: 16px;
             outline: none;
-        }
-
-        input:focus {
-            border-color: #00ff88;
         }
 
         button.btn-entrar {
@@ -130,17 +113,12 @@
             border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        button.btn-entrar:active {
-            opacity: 0.8;
         }
     </style>
 </head>
 <body>
 
-    <img src="https://github.com/identicons/user.png" alt="Foto de Perfil" class="profile-pic">
+    <img src="https://github.com/identicons/user.png" alt="Foto" class="profile-pic">
     <h1>Meus Links</h1>
 
     <div class="links-container">
@@ -152,67 +130,61 @@
             <div class="link-card" onclick="toggleFormSenha()">Aba Restrita 🔒</div>
             
             <div id="form-senha" class="senha-container">
-                <input type="password" id="input-senha" placeholder="Digite a senha">
-                <button class="btn-entrar" onclick="validarAcesso()">Desbloquear Conteúdo</button>
+                <input type="password" id="input-senha" placeholder="Senha de acesso">
+                <button class="btn-entrar" onclick="validarAcesso()">Desbloquear</button>
             </div>
 
             <div id="conteudo-secreto" class="sessao-secreta">
-                <p style="text-align: center; font-size: 12px; color: #00ff88; margin-top: 0;">🔓 Acesso Liberado</p>
+                <p style="text-align: center; font-size: 12px; color: #00ff88;">🔓 Acesso Seguro Liberado</p>
                 <a href="https://1drv.ms/v/c/b7955fde53ea9d7d/IQAFRVFqObE8Qbq9HuiuFvvAAef_-IXJf_fXBI5z_JANiRg?e=kzTWqQ" target="_blank" class="link-secreto">Campo Pedro 1</a>
                 <a href="https://1drv.ms/f/c/b7955fde53ea9d7d/IgCls_cXebWVSLDpN2thj01RARlftsVRmdGnHE1qyyLS2aQ?e=p0VSzl" target="_blank" class="link-secreto">Casamento Sabrina</a>
-                <a href="#" class="link-secreto">EM BREVE</a>
-                <a href="#" class="link-secreto">EM BREVE</a>
                 <a href="#" class="link-secreto">EM BREVE</a>
             </div>
         </div>
     </div>
 
     <script>
-        // Função para mostrar/esconder o formulário de senha
+        // Função para transformar a senha em Hash (SHA-256)
+        async function gerarHash(string) {
+            const msgUint8 = new TextEncoder().encode(string);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
         function toggleFormSenha() {
             const form = document.getElementById('form-senha');
             const conteudo = document.getElementById('conteudo-secreto');
-            const input = document.getElementById('input-senha');
-            
-            // Se o conteúdo já estiver aberto, fecha ele
             if (conteudo.style.display === 'flex') {
                 conteudo.style.display = 'none';
             } else {
-                // Alterna a exibição do input de senha
-                const isVisible = form.style.display === 'flex';
-                form.style.display = isVisible ? 'none' : 'flex';
-                if (!isVisible) {
-                    input.focus(); // Foca no campo automaticamente
-                }
+                form.style.display = form.style.display === 'flex' ? 'none' : 'flex';
+                if (form.style.display === 'flex') document.getElementById('input-senha').focus();
             }
         }
 
-        // Função para validar a senha
-        function validarAcesso() {
+        async function validarAcesso() {
             const input = document.getElementById('input-senha');
             const senhaDigitada = input.value;
-            const senhaCorreta = "07020401";
-            const conteudo = document.getElementById('conteudo-secreto');
-            const form = document.getElementById('form-senha');
             
-            if (senhaDigitada === senhaCorreta) {
-                form.style.display = 'none'; // Esconde o campo de senha
-                conteudo.style.display = 'flex'; // Mostra os links secretos
-                input.value = ""; // Limpa o campo
+            // Esse código longo abaixo é a sua senha "07020401" criptografada.
+            // Ninguém consegue saber qual é a senha original olhando isso aqui.
+            const hashCorreto = "3e03164993108603610991c01570776778f65492d5276e01a851897f51662973";
+            
+            const hashDigitado = await gerarHash(senhaDigitada);
+
+            if (hashDigitado === hashCorreto) {
+                document.getElementById('form-senha').style.display = 'none';
+                document.getElementById('conteudo-secreto').style.display = 'flex';
             } else {
-                alert("Senha incorreta!");
-                input.value = ""; // Limpa o campo para nova tentativa
-                input.focus();
+                alert("Acesso Negado!");
+                input.value = "";
             }
         }
 
-        // Adiciona suporte ao botão "Enter" do teclado
-        document.getElementById('input-senha').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                validarAcesso();
-            }
+        document.getElementById('input-senha').addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter') await validarAcesso();
         });
     </script>
-
 </body>
 </html>
